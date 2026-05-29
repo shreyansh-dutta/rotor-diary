@@ -1,19 +1,22 @@
 # Rotor Diary
 
-Static portfolio site for a student-built Arduino quadcopter project, plus the corrected Arduino flight-control sketch.
+Static build journal for a student-built Arduino quadcopter project, plus the corrected Arduino flight-control sketch.
 
 ## Project Files
 
-- `index.html` - admissions-ready static project journal.
+- `index.html` - static project journal for the drone build.
 - `Drone.ino` - Arduino sketch with 6-channel receiver input, MPU6050 sensing, PID stabilization, ESC output, and failsafe checks.
 
 ## Current Wiring Summary
 
+- Frame: F450 quadcopter frame
+- Motors: 4x 850KV brushless motors
 - ESC signals: `D4`, `D5`, `D6`, `D7`
 - Receiver channels: `D8`, `D9`, `D10`, `D11`, `A0`, `A1`
 - Arming switch: CH6 on `A1`, armed below `1100us`
 - MPU6050: SDA `A4`, SCL `A5`
 - ESC idle: `1150us`; ESC cap: `1850us`
+- Assembly: motor, ESC, signal, and power wiring soldered by hand
 - Common ground is required across Arduino, receiver, MPU6050, and ESC signal grounds.
 
 ## Local Preview
