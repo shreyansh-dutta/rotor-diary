@@ -712,8 +712,8 @@
       <span>DIARY</span>
     </h1>
     <p class="hero-subtitle">
-      Building a quadcopter from scratch — Arduino Uno, MPU6050, hand-written PID stabilization.
-      This portfolio documents the process, failures, rebuilt understanding, and next flight-test milestone.
+      This is my build log for an Arduino-based quadcopter on an F450 frame.
+      I am wiring, soldering, coding, and testing the drone myself while I learn how each part actually works.
     </p>
     <div class="hero-cta">
       <a href="#blog" class="btn-primary">Read the Journal</a>
@@ -739,28 +739,28 @@
 
 <!-- IMPACT -->
 <section id="impact">
-  <div class="section-label" data-num="01">College Application Context</div>
+  <div class="section-label" data-num="01">What I Want This To Show</div>
   <h2 class="section-title">WHAT THIS PROJECT SHOWS</h2>
   <div class="insight-grid fade-up">
     <div class="insight-card">
       <div class="insight-card-title">Self-directed engineering</div>
-      <p>I chose a difficult hardware/software project and kept working through unclear documentation, faulty components, and repeated restarts without a class assignment forcing the work.</p>
+      <p>I picked this project because I wanted to build something real, not because it was assigned. Most of the work has been figuring out what to do when instructions online do not match my parts.</p>
     </div>
     <div class="insight-card">
       <div class="insight-card-title">Debugging and iteration</div>
-      <p>The first version failed because I was copying code I did not understand. The second version began with fundamentals, diagrams, subsystem testing, and clearer checkpoints.</p>
+      <p>The first version failed partly because I was moving too fast and trusting code I could not explain. The rebuild has been slower, but I understand much more of what I am changing.</p>
     </div>
     <div class="insight-card">
       <div class="insight-card-title">Hardware/software integration</div>
-      <p>The build combines soldering, power distribution, receiver input capture, MPU6050 sensing, PID control logic, and direct ESC pulse generation around one physical system.</p>
+      <p>The drone forces the electronics and code to work together: receiver signals, ESC pulses, MPU6050 readings, PID corrections, and the power wiring all affect each other.</p>
     </div>
     <div class="insight-card">
       <div class="insight-card-title">Safety awareness</div>
-      <p>LiPo power, fast propellers, ESC calibration, grounding, and emergency cutoff logic are treated as engineering constraints, not afterthoughts.</p>
+      <p>I am treating safety as part of the build. That means common ground, careful LiPo handling, one BEC or regulator for 5V power, arming logic, and props-off testing before anything spins up.</p>
     </div>
     <div class="insight-card">
       <div class="insight-card-title">Documentation over time</div>
-      <p>The journal captures the actual path: false starts, research, wiring choices, CAD work, testing limits, and what still needs to happen before flight.</p>
+      <p>This page is meant to show the actual path, including the parts that did not work, the wiring decisions, the code changes, and what still has to happen before a real hover test.</p>
     </div>
   </div>
 </section>
@@ -772,19 +772,20 @@
   <h2 class="section-title">THE BUILD</h2>
   <div class="about-grid">
     <div class="about-text">
-      <p>A fully custom-built quadcopter, assembled using an Arduino Uno as the flight controller. No prebuilt flight control systems — all control logic is written from scratch.</p>
-      <p>The frame is an X-configuration with <strong>four 2200KV brushless motors</strong> driven by ESCs, powered through a <strong>3S 11.1V LiPo</strong> via a power distribution board. Stabilization runs on a custom PID loop reading the <strong>MPU6050 IMU</strong> over I2C.</p>
-      <p>A <strong>6-channel RC receiver</strong> provides roll, pitch, throttle, yaw, aux, and arming inputs. The arming switch runs on <strong>CH6 / A1</strong>, and the sketch includes receiver failsafe checks before motors are allowed to spin.</p>
-      <p>This journal documents the build process — component choices, wiring, code, and test results.</p>
+      <p>This is a quadcopter I am building around an Arduino Uno instead of using a ready-made flight controller. The goal is to understand the control system, not just assemble a kit.</p>
+      <p>The drone uses an <strong>F450 frame</strong>, <strong>four 850KV brushless motors</strong>, ESCs, a 3S 11.1V LiPo, and a power distribution board. I soldered the motor, ESC, signal, and power connections myself.</p>
+      <p>The Arduino reads a <strong>6-channel RC receiver</strong>, gets motion data from an <strong>MPU6050 IMU</strong>, and sends direct pulse signals to the ESCs. The arming switch is on <strong>CH6 / A1</strong>, with failsafe checks before the motors are allowed to run.</p>
+      <p>This page is where I am keeping the build notes, wiring decisions, code changes, and test results.</p>
     </div>
     <div>
       <div class="about-card">
         <div class="about-card-title">// Build Snapshot</div>
-        <div class="spec-row"><span class="spec-key">FRAME</span><span class="spec-val">X-Frame Quadcopter</span></div>
+        <div class="spec-row"><span class="spec-key">FRAME</span><span class="spec-val">F450 Quadcopter Frame</span></div>
         <div class="spec-row"><span class="spec-key">FLIGHT CTRL</span><span class="spec-val">Arduino Uno (Custom)</span></div>
-        <div class="spec-row"><span class="spec-key">MOTORS</span><span class="spec-val">4× A2212/6T 2200KV</span></div>
+        <div class="spec-row"><span class="spec-key">MOTORS</span><span class="spec-val">4× 850KV Brushless</span></div>
         <div class="spec-row"><span class="spec-key">ESC PINS</span><span class="spec-val">D4, D5, D6, D7</span></div>
         <div class="spec-row"><span class="spec-key">BATTERY</span><span class="spec-val">3S 11.1V LiPo</span></div>
+        <div class="spec-row"><span class="spec-key">ASSEMBLY</span><span class="spec-val">Hand-soldered wiring</span></div>
         <div class="spec-row"><span class="spec-key">IMU</span><span class="spec-val">MPU6050 (I2C)</span></div>
         <div class="spec-row"><span class="spec-key">RECEIVER</span><span class="spec-val">6CH PWM Input</span></div>
         <div class="spec-row"><span class="spec-key">ARMING</span><span class="spec-val">CH6 / A1 / Switch B</span></div>
@@ -816,15 +817,15 @@
   <div class="proof-grid fade-up">
     <div class="proof-card">
       <div class="insight-card-title">Wiring diagram</div>
-      <p>Documented so the ESC pins, receiver channels, arming switch, MPU6050 I2C lines, and shared ground path can be checked later.</p>
+      <p>I am keeping the wiring documented so I can check the ESC pins, receiver channels, arming switch, MPU6050 I2C lines, and shared ground path without relying on memory.</p>
     </div>
     <div class="proof-card">
       <div class="insight-card-title">CAD and frame planning</div>
-      <p>CAD screenshots should be added here before public submission to show how component placement and mounts were planned spatially.</p>
+      <p>I used CAD planning to think through where parts would sit on the F450 frame and how the mounts and wiring would fit before locking everything down.</p>
     </div>
     <div class="proof-card">
       <div class="insight-card-title">Code and demo evidence</div>
-      <p>The Arduino sketch is included as <code>Drone.ino</code>. Add a short bench-test or hover-test video here when one is ready to share publicly.</p>
+      <p>The Arduino sketch is included as <code>Drone.ino</code>. I still need to add a short bench-test or hover-test video once the next test is ready to share.</p>
     </div>
   </div>
 </section>
@@ -837,10 +838,12 @@
 
     <div style="background:var(--surface); padding:1.8rem;">
       <div style="font-family:var(--mono); font-size:0.6rem; color:var(--amber); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:1rem;">Power System</div>
+      <div class="spec-row"><span class="spec-key">Frame</span><span class="spec-val">F450</span></div>
+      <div class="spec-row"><span class="spec-key">Motors</span><span class="spec-val">850KV Brushless</span></div>
       <div class="spec-row"><span class="spec-key">Battery</span><span class="spec-val">3S 11.1V LiPo</span></div>
       <div class="spec-row"><span class="spec-key">Distribution</span><span class="spec-val">Power Distribution Board</span></div>
       <div class="spec-row"><span class="spec-key">Arduino Power</span><span class="spec-val">USB / Regulated Input</span></div>
-      <div class="spec-row"><span class="spec-key">Grounding</span><span class="spec-val">Common Ground</span></div>
+      <div class="spec-row"><span class="spec-key">Grounding</span><span class="spec-val">Common ground</span></div>
     </div>
 
     <div style="background:var(--surface); padding:1.8rem;">
@@ -866,7 +869,7 @@
       <div class="spec-row"><span class="spec-key">Arm / Disarm</span><span class="spec-val">CH6 below 1100us</span></div>
       <div class="spec-row"><span class="spec-key">ESC Idle</span><span class="spec-val">1150us</span></div>
       <div class="spec-row"><span class="spec-key">ESC Cap</span><span class="spec-val">1850us</span></div>
-      <div class="spec-row"><span class="spec-key">Props</span><span class="spec-val">8045 planned</span></div>
+      <div class="spec-row"><span class="spec-key">Props</span><span class="spec-val">Being checked for 850KV setup</span></div>
     </div>
 
   </div>
@@ -885,15 +888,15 @@
         <span class="post-tag tag-hardware">Hardware</span>
       </div>
       <div class="post-title">PARTS ORDERED — FIRST ATTEMPT</div>
-      <div class="post-excerpt">Got the first set of parts together and started trying to assemble the drone, before realizing I needed a more grounded control approach.</div>
+      <div class="post-excerpt">Got the first set of parts together and started assembling the drone. I quickly realized I needed to slow down and understand the control system better.</div>
     </div>
     <div class="post-expanded" id="p1">
       <h4>Getting Started</h4>
-      <p>Ordered the main components: Arduino Uno, A2212 brushless motors, ESCs, MPU6050, FlySky-style receiver, 3S LiPo battery, and frame hardware. The plan was to assemble the drone and get basic stabilization working from direct receiver inputs.</p>
+      <p>Ordered the main components: Arduino Uno, 850KV brushless motors, ESCs, MPU6050, FlySky-style receiver, 3S LiPo battery, and an F450 frame. At this point I mostly knew what each part was called, but not yet how the whole system should behave together.</p>
       <h4>First Assembly Attempt</h4>
-      <p>Started piecing things together without a strong understanding of how the components interacted. Wired up the ESCs and motors, connected the MPU6050, and tried to get the Arduino to communicate with everything at once.</p>
+      <p>Started piecing things together before I had a strong understanding of how the parts interacted. I wired the ESCs and motors, connected the MPU6050, and tried to make the Arduino handle too much at once.</p>
       <h4>The Control Problem</h4>
-      <p>At first I tried to move too quickly through the control code and leaned too much on AI-generated examples. The code looked functional on the surface, but I did not really understand the receiver timing, ESC pulse output, or why things failed when they failed.</p>
+      <p>At first I moved too quickly through the control code and leaned too much on examples I could not fully explain. The code looked fine on the surface, but I did not understand receiver timing, ESC pulse output, or how to debug failures properly.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p1')">COLLAPSE ↑</button>
     </div>
 
@@ -904,15 +907,15 @@
         <span class="post-tag tag-testing">Testing</span>
       </div>
       <div class="post-title">REALITY CHECK — HALF THE PARTS DON'T WORK</div>
-      <div class="post-excerpt">Several components turned out to be faulty or incompatible. The control code was also too opaque because I was using AI-generated code I did not understand.</div>
+      <div class="post-excerpt">Several parts did not behave the way I expected, and the code was hard to debug because I had not understood enough of it.</div>
     </div>
     <div class="post-expanded" id="p2">
       <h4>What Went Wrong</h4>
-      <p>After weeks of troubleshooting, it became clear that a number of the components weren't functioning correctly — some faulty out of the box, some incompatible with each other in ways I hadn't anticipated. Motors that should have spun wouldn't respond, and I couldn't reliably tell whether the issue was the ESC, the wiring, the code, or the component itself.</p>
+      <p>After weeks of troubleshooting, it became clear that some parts were faulty or not working with the rest of the setup the way I expected. Motors that should have spun would not respond, and I could not always tell whether the problem was the ESC, wiring, code, or the part itself.</p>
       <h4>The Code Problem</h4>
-      <p>The early code was a dead end. I had been using AI to generate large pieces of it, but I had no real understanding of what the receiver readings, PID terms, or ESC outputs meant. When something broke, I had no way to debug it. I was copying output without being able to read it, which meant I could not fix anything.</p>
+      <p>The early code was also a dead end. I had generated or copied too much without understanding what the receiver readings, PID terms, or ESC outputs meant. When something broke, I could not reason through it.</p>
       <h4>Stepping Back</h4>
-      <p>Decided to pause the whole project. Trying to build both the hardware and flight-control software simultaneously, without understanding either properly, was not going anywhere. Put everything aside until after my 8th grade exams in June.</p>
+      <p>I decided to pause the project. Trying to build the hardware and flight-control software at the same time, without understanding either properly, was not going anywhere. I put it aside until after my 8th grade exams in June.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p2')">COLLAPSE ↑</button>
     </div>
 
@@ -927,11 +930,11 @@
     </div>
     <div class="post-expanded" id="p3">
       <h4>Taking Everything Apart</h4>
-      <p>Came back after exams and disassembled the entire build. Rather than trying to fix the previous mess, starting clean made more sense.</p>
+      <p>After exams, I came back and took the build apart. Instead of trying to patch the old version, it made more sense to restart with a cleaner layout and a better understanding.</p>
       <h4>Learning the Fundamentals</h4>
-      <p>Spent a few weeks watching videos and reading about how quadcopters actually work — lift, thrust, torque, how motor pairs counteract each other's rotation to prevent the frame from spinning, how an IMU measures orientation, and what a PID controller is actually doing. This time, before writing any code or soldering anything, the goal was to understand the system first.</p>
+      <p>I spent a few weeks learning the basics again: lift, thrust, torque, why opposite motor pairs spin in different directions, how an IMU measures motion, and what a PID controller is trying to correct. This time I wanted to understand the system before changing more code or soldering more wires.</p>
       <h4>Key Concepts Covered</h4>
-      <p>How brushless motors and ESCs interact via PWM signals. How the MPU6050 outputs accelerometer and gyroscope data over I2C, and what that data actually represents. How a PID loop takes sensor error as input and produces a correction output. How motor mixing translates roll, pitch, and yaw corrections into individual motor speed changes.</p>
+      <p>I focused on how brushless motors and ESCs use pulse signals, how the MPU6050 sends accelerometer and gyro data over I2C, how a PID loop turns sensor error into a correction, and how motor mixing changes the four motor outputs for roll, pitch, and yaw.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p3')">COLLAPSE ↑</button>
     </div>
 
@@ -942,19 +945,19 @@
         <span class="post-tag tag-hardware">Hardware</span>
       </div>
       <div class="post-title">ASSEMBLY BEGINS — WIRING, SOLDERING, CAD</div>
-      <div class="post-excerpt">Started the second assembly attempt. Hand-soldered all connections, worked through conflicting wiring diagrams, and began incorporating CAD design into the project.</div>
+      <div class="post-excerpt">Started the second assembly attempt. I hand-soldered the wiring, checked diagrams carefully, and used CAD planning to think through the layout.</div>
     </div>
     <div class="post-expanded" id="p4">
       <h4>Soldering</h4>
-      <p>Soldered every connection by hand — motor wires to ESCs, ESCs to the power distribution board, and all signal wires to the Arduino. First time doing this level of soldering on a real project. Took time to get clean joints, especially on the smaller signal connections.</p>
+      <p>I soldered the connections myself: motor wires to ESCs, ESC power to the distribution board, and signal wires back to the Arduino. This was the first time I had done this much soldering on a real project, so I took extra time on the smaller signal wires.</p>
       <h4>Wiring Confusion</h4>
-      <p>One consistent problem was conflicting information online. Different people's projects had different wiring for the same components, and it wasn't always clear what was right for my specific combination of parts. Spent a lot of time on forums — Arduino forums, Reddit, YouTube comments — cross-referencing diagrams and reading through other people's issues with similar setups.</p>
+      <p>A constant problem was that different projects online wired similar parts in different ways. I spent a lot of time comparing diagrams, forum posts, and comments to figure out what made sense for my own receiver, Arduino, ESCs, and MPU6050.</p>
       <h4>MPU6050 Orientation</h4>
-      <p>Made sure to mount the MPU6050 in the correct orientation relative to the frame. The sensor's axes need to align with the drone's axes for the PID controller to interpret the data correctly. This is easy to get wrong and hard to debug once everything is assembled.</p>
+      <p>I also had to pay attention to the MPU6050 orientation. If the sensor axes do not match the drone's axes, the PID controller can react in the wrong direction, which is the kind of mistake that becomes hard to diagnose later.</p>
       <h4>CAD Work</h4>
-      <p>Alongside the physical build, started working on CAD designs for parts of the frame and mounts. Helped with understanding how components fit together spatially before committing to a physical configuration.</p>
+      <p>Alongside the physical build, I used CAD to think through parts of the F450 frame layout and mounts. It helped me see how components would fit before committing to the final placement.</p>
       <h4>Parts Issues</h4>
-      <p>Ran into problems with motors and batteries that didn't perform as expected — some motors drew inconsistent current, and one battery had a damaged cell that caused voltage sag under load. Had to source replacements, which added time.</p>
+      <p>I also ran into parts problems. Some components did not behave consistently, and one battery issue caused voltage sag under load. Replacing and checking parts slowed the project down, but it also made the build safer.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p4')">COLLAPSE ↑</button>
     </div>
 
@@ -965,13 +968,13 @@
         <span class="post-tag tag-hardware">Hardware</span>
       </div>
       <div class="post-title">ASSEMBLY COMPLETE</div>
-      <div class="post-excerpt">After four months of work, the physical build is done. All components soldered, mounted, and wired.</div>
+      <div class="post-excerpt">After several months of work, the physical build is together. The frame is assembled, the wiring is soldered, and the electronics are mounted.</div>
     </div>
     <div class="post-expanded" id="p5">
       <h4>What's Built</h4>
-      <p>The X-frame is fully assembled with all four A2212/6T 2200KV motors mounted and wired to their ESCs. The power distribution board connects to the 3S 11.1V LiPo. ESC signals go to D4, D5, D6, and D7. The receiver channels go to D8, D9, D10, D11, A0, and A1. The MPU6050 is connected via I2C (SDA to A4, SCL to A5). All ESC signal grounds, the receiver, Arduino, and MPU6050 share common ground.</p>
+      <p>The F450 frame is assembled with four 850KV motors mounted and wired to their ESCs. The power distribution board connects to the 3S 11.1V LiPo. ESC signals go to D4, D5, D6, and D7. The receiver channels go to D8, D9, D10, D11, A0, and A1. The MPU6050 is connected over I2C, with SDA on A4 and SCL on A5. All ESC signal grounds, the receiver, Arduino, and MPU6050 share common ground.</p>
       <h4>Assembly Time</h4>
-      <p>The assembly phase ran from July to November — longer than expected, mainly because of the parts sourcing issues and the time spent verifying wiring before powering anything on. Not rushing the connections was the right call; cold solder joints or miswired ESCs can damage components or be a safety hazard with a LiPo under load.</p>
+      <p>The assembly took longer than I expected because I kept checking the wiring before powering anything. That was worth it. A cold solder joint, reversed signal, or bad ground can waste hours, damage parts, or become unsafe when the LiPo is connected.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p5')">COLLAPSE ↑</button>
     </div>
 
@@ -986,9 +989,9 @@
     </div>
     <div class="post-expanded" id="p6">
       <h4>Why Fritzing</h4>
-      <p>After finishing the physical assembly, the wiring existed only in my head and in scattered notes. Fritzing is a free tool for creating visual circuit diagrams, and it helped turn the Arduino, receiver, MPU6050, ESC, and power wiring into a diagram I could actually check.</p>
+      <p>After the physical assembly, too much of the wiring was still in my head or in scattered notes. I used Fritzing to turn the Arduino, receiver, MPU6050, ESC, and power wiring into a diagram I could actually check later.</p>
       <h4>What Got Documented</h4>
-      <p>Recreated the full wiring schematic: all four ESC signal connections (D4, D5, D6, D7), the six receiver channels (D8, D9, D10, D11, A0, A1), the MPU6050 I2C lines (SDA/SCL to A4/A5), the shared ground path, and the power wiring rule of using only one ESC BEC or a separate 5V regulator. The diagram now serves as a reliable reference for any future debugging or reassembly.</p>
+      <p>The wiring diagram includes the four ESC signal pins (D4, D5, D6, D7), the six receiver channels (D8, D9, D10, D11, A0, A1), the MPU6050 I2C lines (A4/A5), the shared ground path, and the 5V power rule: use only one ESC BEC or a separate regulator. It gives me one reference to check when debugging.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p6')">COLLAPSE ↑</button>
     </div>
 
@@ -1003,11 +1006,11 @@
     </div>
     <div class="post-expanded" id="p7">
       <h4>FlySky + Simulator</h4>
-      <p>Connected a FlySky controller to the Mac and used the FlySky.drive app to practice on a flight simulator. The idea was to get comfortable with the stick inputs before flying the actual drone. In practice, simulator flying felt too disconnected from the real thing to be genuinely useful — the feedback loop is completely different when there's no real craft responding to gusts or weight distribution.</p>
+      <p>I connected a FlySky controller to my Mac and used a simulator to get more comfortable with the stick inputs before flying the real drone. It helped with basic orientation, but it still felt very different from testing an actual frame with real weight and vibration.</p>
       <h4>Going Back to Basics</h4>
-      <p>Switched focus to understanding how the drone's components work together at the system level. Went back through how the MPU6050 feeds orientation data into the PID controller, how the PID output maps to individual motor speeds through the mixing algorithm, and how the ESC interprets the PWM signal from the Arduino. Understanding this chain end-to-end matters for being able to diagnose what's going wrong during an actual test flight.</p>
+      <p>I shifted back to understanding the system end to end: MPU6050 data into the PID loop, PID output into motor mixing, and Arduino pulses into ESC commands. If something goes wrong in a test, I need to know where in that chain to look.</p>
       <h4>Propeller Issue</h4>
-      <p>Right before planning the first test flight, realised the propellers were too large for the motors. Propeller size directly affects thrust, current draw, and motor temperature — running oversized props can overheat or burn out the motors. Needed to source correctly sized replacements before proceeding.</p>
+      <p>Before the first real test, I realized I needed to be more careful about matching props, motors, and current draw. With the move to 850KV motors, I am checking the prop choice again instead of rushing into a hover test.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p7')">COLLAPSE ↑</button>
     </div>
 
@@ -1018,10 +1021,10 @@
         <span class="post-tag tag-concept">Pause</span>
       </div>
       <div class="post-title">ON HOLD — 9TH GRADE EXAMS</div>
-      <div class="post-excerpt">Pausing the project from February through May 2026 for exam preparation. Will resume after.</div>
+      <div class="post-excerpt">Paused the project from February through May 2026 for exam preparation. I plan to resume testing after that.</div>
     </div>
     <div class="post-expanded" id="p8">
-      <p>Project is on hold until after 9th grade exams in May 2026. Next steps when returning: source correct propellers, complete pre-flight checks, and attempt the first hover test.</p>
+      <p>The project is on hold until after 9th grade exams in May 2026. When I return to it, the next steps are checking propeller choice for the 850KV setup, repeating pre-flight checks, and attempting a controlled first hover.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p8')">COLLAPSE ↑</button>
     </div>
 
@@ -1030,28 +1033,28 @@
 
 <!-- REFLECTION -->
 <section id="reflection">
-  <div class="section-label" data-num="06">Admissions Reflection</div>
+  <div class="section-label" data-num="06">Reflection</div>
   <h2 class="section-title">WHAT I LEARNED</h2>
   <div class="reflection-list fade-up">
     <div class="reflection-row">
       <h3>What failed</h3>
-      <p>The first attempt tried to solve everything at once: hardware assembly, receiver input handling, stabilization, and AI-generated code. When parts failed or code broke, I did not understand enough of the system to isolate the problem.</p>
+      <p>The first attempt failed because I tried to solve everything at once. I was assembling hardware, reading receiver signals, writing stabilization code, and trusting code I could not fully explain.</p>
     </div>
     <div class="reflection-row">
       <h3>What changed</h3>
-      <p>The second attempt started from fundamentals. I took the build apart, studied how quadcopters balance thrust and torque, documented wiring, checked component roles, and treated the drone as connected subsystems instead of separate parts.</p>
+      <p>The second attempt started with basics. I took the build apart, studied how quadcopters balance thrust and torque, documented the wiring, and treated the drone as connected subsystems instead of separate parts.</p>
     </div>
     <div class="reflection-row">
       <h3>What I understand now</h3>
-      <p>I can explain how sensor data from the MPU6050 feeds a PID loop, how motor mixing changes each ESC signal, why common grounding matters, and why propeller size affects current draw and motor safety.</p>
+      <p>I can now explain how MPU6050 data feeds a PID loop, how motor mixing changes each ESC signal, why common grounding matters, and why motor KV and propeller size affect current draw and safety.</p>
     </div>
     <div class="reflection-row">
       <h3>Next milestone</h3>
-      <p>After exams, the next step is sourcing correctly sized propellers, repeating pre-flight safety checks, testing motor response without rushing, and attempting a controlled first hover.</p>
+      <p>After exams, the next step is checking the 850KV motor setup, repeating pre-flight safety checks, testing motor response with props removed, and then attempting a controlled first hover.</p>
     </div>
     <div class="reflection-row">
       <h3>Future updates</h3>
-      <p>This site is static for public hosting. New journal entries, diagrams, CAD screenshots, videos, and code links should be added directly to this HTML file before redeploying to GitHub Pages.</p>
+      <p>I will keep adding updates here as the build changes, especially wiring diagrams, CAD screenshots, test videos, and notes from the first hover attempts.</p>
     </div>
   </div>
 </section>
