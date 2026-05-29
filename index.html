@@ -560,25 +560,12 @@
     line-height: 1.8;
   }
 
-  .proof-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
-    margin-top: 3rem;
-  }
-
-  .proof-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 1.4rem;
-  }
-
-  .proof-card a, .footer-links a {
+  .footer-links a {
     color: var(--amber);
     text-decoration: none;
   }
 
-  .proof-card a:hover, .footer-links a:hover { text-decoration: underline; }
+  .footer-links a:hover { text-decoration: underline; }
 
   .reflection-list {
     display: grid;
@@ -712,7 +699,7 @@
       <span>DIARY</span>
     </h1>
     <p class="hero-subtitle">
-      This is my build log for an Arduino-based quadcopter on an F450 frame.
+      This is my build log for an Arduino-based quadcopter on an F450 X-frame.
       I am wiring, soldering, coding, and testing the drone myself while I learn how each part actually works.
     </p>
     <div class="hero-cta">
@@ -739,12 +726,12 @@
 
 <!-- IMPACT -->
 <section id="impact">
-  <div class="section-label" data-num="01">What I Want This To Show</div>
+  <div class="section-label" data-num="01">What This Shows</div>
   <h2 class="section-title">WHAT THIS PROJECT SHOWS</h2>
   <div class="insight-grid fade-up">
     <div class="insight-card">
       <div class="insight-card-title">Self-directed engineering</div>
-      <p>I picked this project because I wanted to build something real, not because it was assigned. Most of the work has been figuring out what to do when instructions online do not match my parts.</p>
+      <p>I picked this project because I wanted to build something real, not because it was assigned. Most of the work has been figuring out what to do when instructions online do not match my exact parts.</p>
     </div>
     <div class="insight-card">
       <div class="insight-card-title">Debugging and iteration</div>
@@ -760,7 +747,7 @@
     </div>
     <div class="insight-card">
       <div class="insight-card-title">Documentation over time</div>
-      <p>This page is meant to show the actual path, including the parts that did not work, the wiring decisions, the code changes, and what still has to happen before a real hover test.</p>
+      <p>This page shows the actual path: what failed, what I changed, how I documented the wiring, and what still has to happen before a real hover test.</p>
     </div>
   </div>
 </section>
@@ -772,15 +759,15 @@
   <h2 class="section-title">THE BUILD</h2>
   <div class="about-grid">
     <div class="about-text">
-      <p>This is a quadcopter I am building around an Arduino Uno instead of using a ready-made flight controller. The goal is to understand the control system, not just assemble a kit.</p>
-      <p>The drone uses an <strong>F450 frame</strong>, <strong>four 850KV brushless motors</strong>, ESCs, a 3S 11.1V LiPo, and a power distribution board. I soldered the motor, ESC, signal, and power connections myself.</p>
+      <p>This is a quadcopter I am building around an Arduino Uno instead of using a ready-made flight controller. The point is to understand the control system, not just assemble a kit.</p>
+      <p>The drone uses an <strong>F450 X-frame</strong>, <strong>four 850KV brushless motors</strong>, ESCs, a 3S 11.1V LiPo, and a power distribution board. I soldered the motor, ESC, signal, and power connections myself.</p>
       <p>The Arduino reads a <strong>6-channel RC receiver</strong>, gets motion data from an <strong>MPU6050 IMU</strong>, and sends direct pulse signals to the ESCs. The arming switch is on <strong>CH6 / A1</strong>, with failsafe checks before the motors are allowed to run.</p>
-      <p>This page is where I am keeping the build notes, wiring decisions, code changes, and test results.</p>
+      <p>This page is where I am keeping the build notes, wiring decisions, code changes, and test results so someone can see both the technical work and the learning process.</p>
     </div>
     <div>
       <div class="about-card">
         <div class="about-card-title">// Build Snapshot</div>
-        <div class="spec-row"><span class="spec-key">FRAME</span><span class="spec-val">F450 Quadcopter Frame</span></div>
+        <div class="spec-row"><span class="spec-key">FRAME</span><span class="spec-val">F450 X-Frame</span></div>
         <div class="spec-row"><span class="spec-key">FLIGHT CTRL</span><span class="spec-val">Arduino Uno (Custom)</span></div>
         <div class="spec-row"><span class="spec-key">MOTORS</span><span class="spec-val">4× 850KV Brushless</span></div>
         <div class="spec-row"><span class="spec-key">ESC PINS</span><span class="spec-val">D4, D5, D6, D7</span></div>
@@ -811,34 +798,15 @@
   </div>
 </section>
 
-<section id="artifacts" style="padding-top:0;">
-  <div class="section-label" data-num="03">Evidence and Artifacts</div>
-  <h2 class="section-title">PROOF OF WORK</h2>
-  <div class="proof-grid fade-up">
-    <div class="proof-card">
-      <div class="insight-card-title">Wiring diagram</div>
-      <p>I am keeping the wiring documented so I can check the ESC pins, receiver channels, arming switch, MPU6050 I2C lines, and shared ground path without relying on memory.</p>
-    </div>
-    <div class="proof-card">
-      <div class="insight-card-title">CAD and frame planning</div>
-      <p>I used CAD planning to think through where parts would sit on the F450 frame and how the mounts and wiring would fit before locking everything down.</p>
-    </div>
-    <div class="proof-card">
-      <div class="insight-card-title">Code and demo evidence</div>
-      <p>The Arduino sketch is included as <code>Drone.ino</code>. I still need to add a short bench-test or hover-test video once the next test is ready to share.</p>
-    </div>
-  </div>
-</section>
-
 <!-- SPECS DEEP DIVE -->
 <section id="specs" style="border-top: 1px solid var(--border);">
-  <div class="section-label" data-num="04">Technical Breakdown</div>
+  <div class="section-label" data-num="03">Technical Breakdown</div>
   <h2 class="section-title">FULL SPECS</h2>
   <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border);">
 
     <div style="background:var(--surface); padding:1.8rem;">
       <div style="font-family:var(--mono); font-size:0.6rem; color:var(--amber); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:1rem;">Power System</div>
-      <div class="spec-row"><span class="spec-key">Frame</span><span class="spec-val">F450</span></div>
+      <div class="spec-row"><span class="spec-key">Frame</span><span class="spec-val">F450 X-frame</span></div>
       <div class="spec-row"><span class="spec-key">Motors</span><span class="spec-val">850KV Brushless</span></div>
       <div class="spec-row"><span class="spec-key">Battery</span><span class="spec-val">3S 11.1V LiPo</span></div>
       <div class="spec-row"><span class="spec-key">Distribution</span><span class="spec-val">Power Distribution Board</span></div>
@@ -877,7 +845,7 @@
 
 <!-- BLOG -->
 <section id="blog">
-  <div class="section-label" data-num="05">Dec 2024 - Present</div>
+  <div class="section-label" data-num="04">Dec 2024 - Present</div>
   <h2 class="section-title">JOURNAL</h2>
   <div class="blog-grid" id="blog-list">
 
@@ -892,7 +860,7 @@
     </div>
     <div class="post-expanded" id="p1">
       <h4>Getting Started</h4>
-      <p>Ordered the main components: Arduino Uno, 850KV brushless motors, ESCs, MPU6050, FlySky-style receiver, 3S LiPo battery, and an F450 frame. At this point I mostly knew what each part was called, but not yet how the whole system should behave together.</p>
+      <p>Ordered the main components: Arduino Uno, 850KV brushless motors, ESCs, MPU6050, FlySky-style receiver, 3S LiPo battery, and an F450 X-frame. At this point I mostly knew what each part was called, but not yet how the whole system should behave together.</p>
       <h4>First Assembly Attempt</h4>
       <p>Started piecing things together before I had a strong understanding of how the parts interacted. I wired the ESCs and motors, connected the MPU6050, and tried to make the Arduino handle too much at once.</p>
       <h4>The Control Problem</h4>
@@ -955,7 +923,7 @@
       <h4>MPU6050 Orientation</h4>
       <p>I also had to pay attention to the MPU6050 orientation. If the sensor axes do not match the drone's axes, the PID controller can react in the wrong direction, which is the kind of mistake that becomes hard to diagnose later.</p>
       <h4>CAD Work</h4>
-      <p>Alongside the physical build, I used CAD to think through parts of the F450 frame layout and mounts. It helped me see how components would fit before committing to the final placement.</p>
+      <p>Alongside the physical build, I used CAD to think through parts of the F450 X-frame layout and mounts. It helped me see how components would fit before committing to the final placement.</p>
       <h4>Parts Issues</h4>
       <p>I also ran into parts problems. Some components did not behave consistently, and one battery issue caused voltage sag under load. Replacing and checking parts slowed the project down, but it also made the build safer.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p4')">COLLAPSE ↑</button>
@@ -972,7 +940,7 @@
     </div>
     <div class="post-expanded" id="p5">
       <h4>What's Built</h4>
-      <p>The F450 frame is assembled with four 850KV motors mounted and wired to their ESCs. The power distribution board connects to the 3S 11.1V LiPo. ESC signals go to D4, D5, D6, and D7. The receiver channels go to D8, D9, D10, D11, A0, and A1. The MPU6050 is connected over I2C, with SDA on A4 and SCL on A5. All ESC signal grounds, the receiver, Arduino, and MPU6050 share common ground.</p>
+      <p>The F450 X-frame is assembled with four 850KV motors mounted and wired to their ESCs. The power distribution board connects to the 3S 11.1V LiPo. ESC signals go to D4, D5, D6, and D7. The receiver channels go to D8, D9, D10, D11, A0, and A1. The MPU6050 is connected over I2C, with SDA on A4 and SCL on A5. All ESC signal grounds, the receiver, Arduino, and MPU6050 share common ground.</p>
       <h4>Assembly Time</h4>
       <p>The assembly took longer than I expected because I kept checking the wiring before powering anything. That was worth it. A cold solder joint, reversed signal, or bad ground can waste hours, damage parts, or become unsafe when the LiPo is connected.</p>
       <button class="close-btn" onclick="event.stopPropagation(); togglePost('p5')">COLLAPSE ↑</button>
@@ -1033,7 +1001,7 @@
 
 <!-- REFLECTION -->
 <section id="reflection">
-  <div class="section-label" data-num="06">Reflection</div>
+  <div class="section-label" data-num="05">Reflection</div>
   <h2 class="section-title">WHAT I LEARNED</h2>
   <div class="reflection-list fade-up">
     <div class="reflection-row">
