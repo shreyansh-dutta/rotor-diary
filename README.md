@@ -9,7 +9,7 @@ Static build journal for a student-built Arduino quadcopter project, plus the co
 
 ## Current Wiring Summary
 
-- Frame: F450 quadcopter frame
+- Frame: F450 X-frame quadcopter frame
 - Motors: 4x 850KV brushless motors
 - ESC signals: `D4`, `D5`, `D6`, `D7`
 - Receiver channels: `D8`, `D9`, `D10`, `D11`, `A0`, `A1`
