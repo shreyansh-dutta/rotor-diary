@@ -5,14 +5,15 @@ Static build journal for a student-built Arduino quadcopter project, plus the co
 ## Project Files
 
 - `index.html` - static project journal for the drone build.
-- `Drone.ino` - Arduino sketch with 6-channel receiver input, MPU6050 sensing, PID stabilization, ESC output, and failsafe checks.
+- `Drone.ino` - Arduino sketch with FS-R6B 6-channel receiver input, MPU6050 sensing, PID stabilization, ESC output, and failsafe checks.
 
 ## Current Wiring Summary
 
 - Frame: F450 X-frame quadcopter frame
 - Motors: 4x 850KV brushless motors
 - ESC signals: `D4`, `D5`, `D6`, `D7`
-- Receiver channels: `D8`, `D9`, `D10`, `D11`, `A0`, `A1`
+- Receiver: FS-R6B, channels `D8`, `D9`, `D10`, `D11`, `A0`, `A1`
+- Transmitter/controller: FS-CT6B
 - Arming switch: CH6 on `A1`, armed below `1100us`
 - MPU6050: SDA `A4`, SCL `A5`
 - ESC idle: `1150us`; ESC cap: `1850us`
