@@ -5,16 +5,18 @@ Static build journal for a student-built Arduino quadcopter project, plus the co
 ## Project Files
 
 - `index.html` - static project journal for the drone build.
-- `Drone.ino` - Arduino sketch with FS-R6B 6-channel receiver input, MPU6050 sensing, PID stabilization, ESC output, and failsafe checks.
+- `Drone.ino` - Arduino sketch with FS-R6B receiver input, MPU6050 sensing, PID stabilization, ESC output, and failsafe checks.
 
 ## Current Wiring Summary
 
 - Frame: F450 X-frame quadcopter frame
-- Motors: 4x 850KV brushless motors
+- Motors: 4x 1000KV brushless motors
 - ESC signals: `D4`, `D5`, `D6`, `D7`
-- Receiver: FS-R6B, channels `D8`, `D9`, `D10`, `D11`, `A0`, `A1`
+- Receiver: FS-R6B active channels `D8`, `D9`, `D10`, `D11`, `D12`; CH6 is optional/not used
 - Transmitter/controller: FS-CT6B
-- Arming switch: CH6 on `A1`, armed below `1100us`
+- Kill switch: Switch B forces CH3 on `D10` to about `1008-1012us`
+- Throttle/kill logic: CH3 `<= 1040us` is disarmed; CH3 `> 1040us` allows motors only after throttle cut was seen once
+- Receiver failsafe: CH3 timeout is `1,000,000us` / 1 second
 - MPU6050: SDA `A4`, SCL `A5`
 - ESC idle: `1150us`; ESC cap: `1850us`
 - Assembly: motor, ESC, signal, and power wiring soldered by hand
@@ -30,15 +32,9 @@ python3 -m http.server 5173
 
 Then visit `http://localhost:5173`.
 
-## GitHub Pages Hosting
+## Publishing Note
 
-1. Create a GitHub repository for the project.
-2. Add `index.html`, `Drone.ino`, and this `README.md` at the repository root.
-3. Push the files to the `main` branch.
-4. In GitHub, open **Settings -> Pages**.
-5. Set **Source** to **Deploy from a branch**.
-6. Set **Branch** to `main` and folder to `/root`.
-7. Save, wait for GitHub Pages to publish, then use the generated public URL in the college application.
+This repository stores the project files and proof images. It does not need GitHub Pages enabled unless I choose to publish it there later.
 
 ## Before Sharing Publicly
 

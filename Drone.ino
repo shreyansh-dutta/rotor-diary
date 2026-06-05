@@ -10,10 +10,10 @@
 #define ESC_IDLE 1150
 #define ESC_MAX 1850
 
-#define ARM_THRESHOLD_US 1100
+#define THROTTLE_CUT_US 1040
 #define MIN_VALID_RX_US 900
 #define MAX_VALID_RX_US 2200
-#define RX_FAILSAFE_US 120000UL
+#define RX_FAILSAFE_US 1000000UL
 
 // Receiver channel indexes.
 enum {
@@ -22,7 +22,7 @@ enum {
   CH_THROTTLE = 2,
   CH_YAW = 3,
   CH_AUX = 4,
-  CH_ARM = 5,
+  CH_AUX2 = 5,
   RX_CHANNELS = 6
 };
 
@@ -33,11 +33,18 @@ enum {
   AXIS_YAW = 2
 };
 
+enum {
+  DISARM_NONE = 0,
+  DISARM_RX_LOST = 1,
+  DISARM_THROTTLE_CUT = 2,
+  DISARM_WAITING_FOR_CUT = 3
+};
+
 volatile uint32_t rx_timer[RX_CHANNELS];
 volatile uint32_t rx_last_seen[RX_CHANNELS];
+volatile uint32_t rx_pulse_count[RX_CHANNELS];
 volatile uint8_t last_pinb;
-volatile uint8_t last_pinc;
-volatile int receiver_input[RX_CHANNELS] = {1500, 1500, 1000, 1500, 1000, 1190};
+volatile int receiver_input[RX_CHANNELS] = {1500, 1500, 1000, 1500, 1000, 1000};
 
 float gyro_offset[3];
 float gyro_raw[3];
@@ -61,8 +68,12 @@ const float roll_level_offset = -2.1;
 int esc[4] = {ESC_STOP, ESC_STOP, ESC_STOP, ESC_STOP};
 int throttle;
 bool armed = false;
+bool throttle_cut_seen = false;
 bool first_angle = true;
+uint8_t disarm_reason = DISARM_WAITING_FOR_CUT;
+uint8_t last_printed_disarm_reason = 255;
 uint32_t loop_timer;
+uint32_t debug_timer;
 
 static bool valid_rx_pulse(uint16_t pulse) {
   return pulse >= MIN_VALID_RX_US && pulse <= MAX_VALID_RX_US;
@@ -76,20 +87,20 @@ static int rx_read(uint8_t channel) {
   return value;
 }
 
-static bool receiver_is_alive() {
+static uint32_t throttle_signal_age_us() {
   uint32_t now = micros();
-  for (uint8_t i = 0; i < RX_CHANNELS; i++) {
-    uint32_t last_seen;
-    uint8_t old_sreg = SREG;
-    noInterrupts();
-    last_seen = rx_last_seen[i];
-    SREG = old_sreg;
+  uint32_t last_seen;
+  uint8_t old_sreg = SREG;
+  noInterrupts();
+  last_seen = rx_last_seen[CH_THROTTLE];
+  SREG = old_sreg;
 
-    if (last_seen == 0 || now - last_seen > RX_FAILSAFE_US) {
-      return false;
-    }
-  }
-  return true;
+  if (last_seen == 0) return 0xFFFFFFFFUL;
+  return now - last_seen;
+}
+
+static bool throttle_signal_is_alive() {
+  return throttle_signal_age_us() <= RX_FAILSAFE_US;
 }
 
 void setup() {
@@ -100,8 +111,8 @@ void setup() {
   pinMode(9, INPUT);    // CH2 pitch
   pinMode(10, INPUT);   // CH3 throttle
   pinMode(11, INPUT);   // CH4 yaw
-  pinMode(A0, INPUT);   // CH5 aux
-  pinMode(A1, INPUT);   // CH6 arming switch
+  pinMode(12, INPUT);   // CH5 aux, optional
+  pinMode(13, INPUT);   // CH6 aux, optional
 
   Serial.begin(9600);
   Wire.begin();
@@ -126,14 +137,13 @@ void setup() {
   gyro_offset[2] /= 2000.0;
 
   last_pinb = PINB;
-  last_pinc = PINC;
 
-  PCICR |= (1 << PCIE0) | (1 << PCIE1);
-  PCMSK0 |= (1 << PCINT0) | (1 << PCINT1) | (1 << PCINT2) | (1 << PCINT3); // D8-D11
-  PCMSK1 |= (1 << PCINT8) | (1 << PCINT9);                                  // A0-A1
+  PCICR |= (1 << PCIE0);
+  PCMSK0 |= (1 << PCINT0) | (1 << PCINT1) | (1 << PCINT2) | (1 << PCINT3) | (1 << PCINT4) | (1 << PCINT5); // D8-D13
 
   Serial.println(F("Ready. Props off for bench testing."));
   loop_timer = micros();
+  debug_timer = millis();
 }
 
 void loop() {
@@ -145,13 +155,15 @@ void loop() {
 
   calculate_angles();
   update_arming();
+  print_disarm_reason_if_changed();
+  print_receiver_debug();
 
   throttle = rx_read(CH_THROTTLE);
   if (!valid_rx_pulse(throttle)) {
     throttle = ESC_STOP;
   }
 
-  if (armed && throttle > 1050 && receiver_is_alive()) {
+  if (armed && throttle > THROTTLE_CUT_US && throttle_signal_is_alive()) {
     calculate_pid();
 
     // Motor order:
@@ -249,14 +261,71 @@ void calculate_angles() {
 }
 
 void update_arming() {
-  int arm_channel = rx_read(CH_ARM);
+  int throttle_channel = rx_read(CH_THROTTLE);
+  bool throttle_valid = valid_rx_pulse(throttle_channel);
+  bool rx_ok = throttle_signal_is_alive();
 
-  // FS-CT6B Switch B on this build: toward you is about 1012 us, away is about 1190 us.
-  armed = valid_rx_pulse(arm_channel) && arm_channel < ARM_THRESHOLD_US && receiver_is_alive();
+  // Switch B on this transmitter is acting as throttle cut on CH3:
+  // toward pilot: about 1008-1012 us = locked.
+  // away from pilot: about 1068-1908 us = motors allowed.
+  if (!rx_ok || !throttle_valid) {
+    armed = false;
+    throttle_cut_seen = false;
+    disarm_reason = DISARM_RX_LOST;
+  } else if (throttle_channel <= THROTTLE_CUT_US) {
+    armed = false;
+    throttle_cut_seen = true;
+    disarm_reason = DISARM_THROTTLE_CUT;
+  } else {
+    armed = throttle_cut_seen;
+    disarm_reason = armed ? DISARM_NONE : DISARM_WAITING_FOR_CUT;
+  }
 
   if (!armed) {
     stop_motors_and_reset_pid();
   }
+}
+
+void print_disarm_reason_if_changed() {
+  if (disarm_reason == last_printed_disarm_reason) {
+    return;
+  }
+
+  last_printed_disarm_reason = disarm_reason;
+  Serial.print(F("State: "));
+  if (disarm_reason == DISARM_NONE) {
+    Serial.print(F("ARMED"));
+  } else if (disarm_reason == DISARM_RX_LOST) {
+    Serial.print(F("DISARMED RX_LOST"));
+  } else if (disarm_reason == DISARM_THROTTLE_CUT) {
+    Serial.print(F("DISARMED THROTTLE_CUT"));
+  } else {
+    Serial.print(F("DISARMED WAITING_FOR_CUT"));
+  }
+  Serial.print(F(" CH3="));
+  Serial.print(rx_read(CH_THROTTLE));
+  Serial.print(F(" age_us="));
+  Serial.println(throttle_signal_age_us());
+}
+
+void print_receiver_debug() {
+  if (millis() - debug_timer < 1000) {
+    return;
+  }
+  debug_timer = millis();
+
+  uint32_t ch3_count;
+  uint8_t old_sreg = SREG;
+  noInterrupts();
+  ch3_count = rx_pulse_count[CH_THROTTLE];
+  SREG = old_sreg;
+
+  Serial.print(F("RX CH3="));
+  Serial.print(rx_read(CH_THROTTLE));
+  Serial.print(F(" age_us="));
+  Serial.print(throttle_signal_age_us());
+  Serial.print(F(" pulses="));
+  Serial.println(ch3_count);
 }
 
 void stop_motors_and_reset_pid() {
@@ -320,6 +389,7 @@ void handle_pin_change(uint8_t channel, bool is_high, uint32_t now) {
     if (valid_rx_pulse(pulse)) {
       receiver_input[channel] = pulse;
       rx_last_seen[channel] = now;
+      rx_pulse_count[channel]++;
     }
   }
 }
@@ -334,14 +404,6 @@ ISR(PCINT0_vect) {
   if (changed & (1 << 1)) handle_pin_change(CH_PITCH, pins & (1 << 1), now);    // D9
   if (changed & (1 << 2)) handle_pin_change(CH_THROTTLE, pins & (1 << 2), now); // D10
   if (changed & (1 << 3)) handle_pin_change(CH_YAW, pins & (1 << 3), now);      // D11
-}
-
-ISR(PCINT1_vect) {
-  uint32_t now = micros();
-  uint8_t changed = PINC ^ last_pinc;
-  uint8_t pins = PINC;
-  last_pinc = pins;
-
-  if (changed & (1 << 0)) handle_pin_change(CH_AUX, pins & (1 << 0), now);      // A0
-  if (changed & (1 << 1)) handle_pin_change(CH_ARM, pins & (1 << 1), now);      // A1
+  if (changed & (1 << 4)) handle_pin_change(CH_AUX, pins & (1 << 4), now);      // D12
+  if (changed & (1 << 5)) handle_pin_change(CH_AUX2, pins & (1 << 5), now);     // D13
 }
